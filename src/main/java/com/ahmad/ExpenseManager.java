@@ -109,7 +109,18 @@ public class ExpenseManager {
             if (expenses.isEmpty()){
                 System.out.println("Can't list because the list is empty!");
             }
-            System.out.println("Expense : " + expense.toString());
+            System.out.format("%-5s %-12s %-20s %-30s %-10s%n", "ID", "DATE", "NAME", "DESCRIPTION", "AMOUNT");
+            System.out.println("-----------------------------------------------------------------------------------------");
+            System.out.format("%-5d %-12s %-20s %-30s $%-10.2f%n",
+                    expense.getId(),
+                    expense.getDateTime(),
+                    expense.getName(),
+                    expense.getDescription(),
+                    expense.getAmount()
+            );
+
+//            System.out.println("ID    DATE    DESCRIPTION  AMOUNT");
+//            System.out.println("Expense : " + expense.getId() + expense.getDateTime() + expense.getDescription() + expense.getAmount());
         }
     }
 
