@@ -1,0 +1,10 @@
+[
+  {
+    "id": 3,
+    "name": "Buy MTS Manual",
+    "description": "For school",
+    "amount": 2500.0,
+    "dateTime": "2025-03-08",
+    "category": "Books"
+  }
+]
