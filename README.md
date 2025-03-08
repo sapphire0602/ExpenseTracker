@@ -22,7 +22,7 @@ Ensure you have the following installed:
    ```
 2. Navigate to the project folder:
    ```sh
-   cd expense-tracker-cli
+   cd ExpenseTracker
    cd target
    ```
 3. Run the application:
