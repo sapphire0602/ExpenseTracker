@@ -1,11 +1,9 @@
 package com.ahmad;
 
 import java.time.Month;
-import java.util.Objects;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 public class Main {
     public static String command;
 
@@ -73,6 +71,7 @@ public class Main {
                 ExpenseManager.saveExpensesToFile();
                 System.out.println("----------------EXITING THE APPLICATION---------------");
                 System.exit(0);
+                break;
 
             default:
                 System.err.println("Invalid Input, Please Try Again!");

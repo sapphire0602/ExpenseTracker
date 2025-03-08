@@ -23,10 +23,11 @@ Ensure you have the following installed:
 2. Navigate to the project folder:
    ```sh
    cd expense-tracker-cli
+   cd target
    ```
 3. Run the application:
    ```sh
-   java -jar ExpenseTracker.jar
+   java -jar ExpenseTracker-1.0-SNAPSHOT.jar
    ```
 
 ## Usage
