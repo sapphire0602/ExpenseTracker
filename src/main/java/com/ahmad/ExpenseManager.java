@@ -79,6 +79,7 @@ public class ExpenseManager {
 
     public void clearAll() {
         expenses.clear();
+        saveExpenses();
     }
 
     public void updateExpense(
