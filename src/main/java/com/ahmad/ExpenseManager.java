@@ -26,17 +26,6 @@ public class ExpenseManager {
         .setPrettyPrinting()
         .create();
 
-    public void createNewFile() {
-        try {
-            File jsonFile = new File(FILE_PATH);
-            if (!jsonFile.exists()) {
-                jsonFile.createNewFile();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void saveExpenses() {
         try (FileWriter writer = new FileWriter(FILE_NAME)) {
             gson.toJson(expenses, writer);
