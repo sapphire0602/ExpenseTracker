@@ -145,8 +145,7 @@ public class ExpenseManager {
         }
     }
 
-    public static void summarizeExpenses() {
-        loadExpensesFromFile(); // get total
+    public void summarizeExpenses() {
         double totalExpenses = expenses
             .stream()
             .mapToDouble(Expense::getAmount)
