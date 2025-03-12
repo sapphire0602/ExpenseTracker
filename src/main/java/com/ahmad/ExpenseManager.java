@@ -133,10 +133,11 @@ public class ExpenseManager {
             "-----------------------------------------------------------------------------------------"
         );
 
+        int counter = 0;
         for (Expense expense : expenses) {
             System.out.format(
                 "%-5d %-12s %-20s %-30s $%-10.2f\n",
-                expense.getId(),
+                ++counter,
                 expense.getDateTime(),
                 expense.getName(),
                 expense.getDescription(),
