@@ -81,15 +81,6 @@ public class ExpenseManager {
         saveExpenses();
     }
 
-    private static int findExpenseId(int expenseId) {
-        for (Expense expense : expenses) {
-            if (expense.getId() == expenseId) {
-                return expenses.indexOf(expense);
-            }
-        }
-        return -1;
-    }
-
     public void updateExpense(
         String name,
         String description,
