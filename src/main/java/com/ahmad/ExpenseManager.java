@@ -78,7 +78,7 @@ public class ExpenseManager {
     }
 
     public void clearAll() {
-        expenses.clear();
+        expenses = new ArrayList<>();
         saveExpenses();
     }
 
