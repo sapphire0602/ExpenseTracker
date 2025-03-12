@@ -42,46 +42,43 @@ public class ExpenseManager {
         }
     }
 
-    public static void addExpense(
+    public void addExpense(
         String name,
         String description,
         String category,
         double amount
     ) {
-        if (expenses == null) {
-            expenses = new ArrayList<>();
-        }
-        LocalDate currentDate = LocalDate.now();
-
-        int maxId = 0;
+        // Set the initial ID to 1
+        int id = 1;
+        
+        // Check if the list is not empty and retrieve the last ID of the expense
+        // then set the initial ID to the last ID + 1
         if (!expenses.isEmpty()) {
-            maxId = expenses.stream().mapToInt(Expense::getId).max().getAsInt();
+            final int lastID = expenses.getLast().getId();
+            id = lastID + 1;
         }
-        lastId = maxId;
+        
         Expense expense = new Expense(
-            ++lastId,
+            id,
             name,
             description,
             amount,
-            currentDate,
+            LocalDate.now(),
             category
         );
 
+        expenses.add(expense);
         System.out.println("New expense created:");
         System.out.println("ID: " + expense.getId());
         System.out.println("Name: " + expense.getName());
         System.out.println("Description: " + expense.getDescription());
         System.out.println("Amount: " + expense.getAmount());
         System.out.println("Date: " + expense.getDateTime());
-        expenses.add(expense);
-        //        for (Expense e : expenses){
-        //            System.out.println(e.getAmount() + ", " + e.getCategory());
-        //        }
         System.out.printf(
             "-------------------------- Expense Added Successfully (ID %d) -------------------------- \n",
             expense.getId()
         );
-        saveExpensesToFile();
+        saveExpenses();
     }
 
     private static int findExpenseId(int expenseId) {
