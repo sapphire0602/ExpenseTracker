@@ -77,6 +77,10 @@ public class ExpenseManager {
         saveExpenses();
     }
 
+    public void clearAll() {
+        expenses.clear();
+    }
+
     public void updateExpense(
         String name,
         String description,
@@ -160,7 +164,9 @@ public class ExpenseManager {
         }
 
         expenses.remove(pos - 1);
-        System.out.println("Expense with ID : " + pos + "  Successfully deleted !");
+        System.out.println(
+            "Expense with ID : " + pos + "  Successfully deleted !"
+        );
 
         saveExpenses();
     }
