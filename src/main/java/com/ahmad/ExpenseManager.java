@@ -3,9 +3,11 @@ package com.ahmad;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -14,16 +16,17 @@ import java.util.List;
 
 public class ExpenseManager {
 
-    private static final String FILE_PATH = "expense.json";
-    private static int lastId = 0;
-    private static final LocalDate date = LocalDate.now();
-    private static List<Expense> expenses = new ArrayList<>();
+    // Set the default file name to ".expense_tracker.json" will be hidden by default in most file manager.
+    private static final String FILE_NAME = ".expense_tracker.json";
+    private int lastId = 0;
+    private final LocalDate date = LocalDate.now();
+    private List<Expense> expenses = new ArrayList<>();
     private static final Gson gson = new GsonBuilder()
         .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
         .setPrettyPrinting()
         .create();
 
-    public static void createNewFile() {
+    public void createNewFile() {
         try {
             File jsonFile = new File(FILE_PATH);
             if (!jsonFile.exists()) {
@@ -34,24 +37,19 @@ public class ExpenseManager {
         }
     }
 
-    public static void saveExpensesToFile() {
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+    public void saveExpenses() {
+        try (FileWriter writer = new FileWriter(FILE_NAME)) {
             gson.toJson(expenses, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void loadExpensesFromFile() {
-        try (FileReader reader = new FileReader(FILE_PATH)) {
-            Expense[] loadExpense = gson.fromJson(reader, Expense[].class);
-            if (loadExpense != null) { // NullPointer possible here , f**k that exception
-                expenses = new ArrayList<>(Arrays.asList(loadExpense));
-            }
-        } catch (IOException e) {
-            System.err.println(
-                "Seems your file is empty , Nothing to read there!"
-            );
+    public void loadExpenses() {
+        try (FileReader reader = new FileReader(FILE_NAME)) {
+            expenses = Arrays.asList(gson.fromJson(reader, Expense[].class));
+        } catch (Exception e) { // try (FileReader reader = new FileReader(FILE_NAME) {
+            System.err.println(e.getMessage());
         }
     }
 
@@ -146,7 +144,7 @@ public class ExpenseManager {
         System.out.println(
             "-----------------------------------------------------------------------------------------"
         );
-        
+
         for (Expense expense : expenses) {
             System.out.format(
                 "%-5d %-12s %-20s %-30s $%-10.2f\n",
