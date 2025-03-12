@@ -3,27 +3,29 @@ package com.ahmad;
 import java.time.Month;
 import java.util.Scanner;
 
-
 public class Main {
+
     public static String command;
 
     public static void main(String[] args) {
-        System.out.println("----------- WELCOME TO EXPENSE TRACKER CLI APP (input <help> to get familiar with the commands!) --------------");
-        if (args.length==0){
+        System.out.println(
+            "----------- WELCOME TO EXPENSE TRACKER CLI APP (input <help> to get familiar with the commands!) --------------"
+        );
+        if (args.length == 0) {
             getHelp();
         }
 
-        ExpenseManager.createNewFile();
-        ExpenseManager.loadExpensesFromFile();
+        ExpenseManager expenseManager = new ExpenseManager();
+        expenseManager.loadExpenses();
 
-        Scanner scanner = new Scanner(System.in);
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (true) {
+                System.out.print("\nexpense-tracker >");
+                System.out.flush();
+                String input = scanner.nextLine().trim();
 
-        while(true) {
-            System.out.print("\nexpense-tracker >");
-            System.out.flush();
-            String input = scanner.nextLine().trim();
-
-            handleExpenseMethods(input);
+                handleExpenseMethods(input);
+            }
         }
     }
 
@@ -42,37 +44,31 @@ public class Main {
             case "add":
                 addExpense(args);
                 break;
-
             case "list":
                 list();
                 break;
-
             case "summary":
                 summary(args);
                 break;
-
             case "delete":
                 delete(args);
                 break;
-
             case "update":
                 update(args);
                 break;
-
             case "help":
                 getHelp();
                 break;
-
             case "clear":
                 clear();
                 break;
-
             case "exit":
                 ExpenseManager.saveExpensesToFile();
-                System.out.println("----------------EXITING THE APPLICATION---------------");
+                System.out.println(
+                    "----------------EXITING THE APPLICATION---------------"
+                );
                 System.exit(0);
                 break;
-
             default:
                 System.err.println("Invalid Input, Please Try Again!");
         }
@@ -102,8 +98,15 @@ public class Main {
             }
         }
         ExpenseManager.addExpense(name, description, category, amount);
-        if (name == null || description == null || category == null || amount == -1) {
-            System.err.println("Error: Missing required fields. Usage: add --name <name> --description <desc> --category <cat> --amount <amount>");
+        if (
+            name == null ||
+            description == null ||
+            category == null ||
+            amount == -1
+        ) {
+            System.err.println(
+                "Error: Missing required fields. Usage: add --name <name> --description <desc> --category <cat> --amount <amount>"
+            );
         }
     }
 
@@ -159,20 +162,32 @@ public class Main {
         if (expenseId <= 0) {
             System.err.println("Invalid Expense Id");
         }
-        ExpenseManager.updateExpense(name, description, amount, category, expenseId);
+        ExpenseManager.updateExpense(
+            name,
+            description,
+            amount,
+            category,
+            expenseId
+        );
     }
 
     public static void clear() {
         ExpenseManager.clearAll();
     }
 
-    private static  void getHelp(){
+    private static void getHelp() {
         System.out.println("\nCommands:");
-        System.out.println("  add --name <name> --description <description> --category <category> --amount <amount>  => [Add expense]");
+        System.out.println(
+            "  add --name <name> --description <description> --category <category> --amount <amount>  => [Add expense]"
+        );
         System.out.println("  list => [Show all expenses]");
-        System.out.println("  summary --month <month>  => [Show monthly-expense summary]");
+        System.out.println(
+            "  summary --month <month>  => [Show monthly-expense summary]"
+        );
         System.out.println("  delete --id <id>   => [Remove an expense]");
-        System.out.println("  update --id <id> --description <description> -- <category> ......  => [Edit an expense]");
+        System.out.println(
+            "  update --id <id> --description <description> -- <category> ......  => [Edit an expense]"
+        );
         System.out.println("  clear => [Remove all expenses]");
         System.out.println("  help  => [Show the help message]");
         System.out.println("  exit => Save & exit the lovely application.");
