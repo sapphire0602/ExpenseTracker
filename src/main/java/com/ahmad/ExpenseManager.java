@@ -1,5 +1,6 @@
 package com.ahmad;
 
+import apple.laf.JRSUIConstants.Size;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
@@ -150,29 +151,23 @@ public class ExpenseManager {
             .stream()
             .mapToDouble(Expense::getAmount)
             .sum();
-        //                .reduce(0.0, (a, b) -> a + b); //can use method reference Double :: sum instead
         System.out.println("Summary : " + totalExpenses);
     }
 
-    public static void deleteExpense(int expenseId) {
-        loadExpensesFromFile();
-        boolean removeExpense = expenses.removeIf(expense ->
-            (expenseId == expense.getId())
-        );
-        if (removeExpense) {
-            System.out.println(
-                "Expense with ID : " + expenseId + "  Successfully deleted !"
-            );
-        } else {
+    public void deleteExpense(int pos) {
+        if (pos < 1 && pos > expenses.size()) {
             System.out.println(
                 "Failed to delete expense with ID : " +
-                expenseId +
+                pos +
                 " , because it doesn't exist!"
             );
+            return;
         }
-        saveExpensesToFile();
-        //        Stream<Expense> expenseIdToDelete = expenses.stream().filter(e -> (e.getId() == expenseId));
-        //        expenses.remove(expenseIdToDelete);
+
+        expenses.remove(pos - 1);
+        System.out.println("Expense with ID : " + pos + "  Successfully deleted !");
+
+        saveExpenses();
     }
 
     public static void summarizeByMonth(Month month) {
