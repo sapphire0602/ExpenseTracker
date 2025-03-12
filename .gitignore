@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+## Expense Tracker generated JSOn
+expense.json
+.expense_tracker.json

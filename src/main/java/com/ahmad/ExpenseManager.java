@@ -2,8 +2,6 @@ package com.ahmad;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,160 +12,174 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExpenseManager {
-    private static final String FILE_PATH = "expense.json";
-    private static int lastId = 0;
-    private static final LocalDate date = LocalDate.now();
-    private static List<Expense> expenses = new ArrayList<>();
-    private static final Gson gson = new GsonBuilder().
-            registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter()).setPrettyPrinting().create();
 
+    // Set the default file name to ".expense_tracker.json" will be hidden by default in most file manager.
+    private List<Expense> expenses = new ArrayList<>();
 
-    public static void createNewFile() {
-        try {
-            File jsonFile = new File(FILE_PATH);
-            if (!jsonFile.exists()) {
-                jsonFile.createNewFile();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private static final String FILE_NAME = ".expense_tracker.json";
+    private static final Gson gson = new GsonBuilder()
+        .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
+        .setPrettyPrinting()
+        .create();
 
-    public static void saveExpensesToFile() {
-        try (FileWriter writer = new FileWriter(FILE_PATH)) {
+    public void saveExpenses() {
+        try (FileWriter writer = new FileWriter(FILE_NAME)) {
             gson.toJson(expenses, writer);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void loadExpensesFromFile() {
-        try (FileReader reader = new FileReader(FILE_PATH)) {
-            Expense[] loadExpense = gson.fromJson(reader, Expense[].class);
-            if (loadExpense != null) { // NullPointer possible here , f**k that exception
-                expenses = new ArrayList<>(Arrays.asList(loadExpense));
-            }
-        } catch (IOException e) {
-            System.err.println("Seems your file is empty , Nothing to read there!");
+    public void loadExpenses() {
+        try (FileReader reader = new FileReader(FILE_NAME)) {
+            expenses = Arrays.asList(gson.fromJson(reader, Expense[].class));
+        } catch (Exception e) { // try (FileReader reader = new FileReader(FILE_NAME) {
+            System.err.println(e.getMessage());
         }
     }
 
-    public static void addExpense(String name, String description, String category, double amount) {
-        if (expenses==null){
-            expenses= new ArrayList<>();
-        }
-        LocalDate currentDate = LocalDate.now();
+    public void addExpense(
+        String name,
+        String description,
+        String category,
+        double amount
+    ) {
+        // Set the initial ID to 1
+        int id = 1;
 
-        int maxId = 0;
-        if(!expenses.isEmpty()){
-            maxId = expenses.stream().mapToInt(Expense::getId).max().getAsInt();
+        // Check if the list is not empty and retrieve the last ID of the expense
+        // then set the initial ID to the last ID + 1
+        if (!expenses.isEmpty()) {
+            final int lastID = expenses.getLast().getId();
+            id = lastID + 1;
         }
-        lastId=maxId;
-        Expense expense = new Expense(++lastId,name,description,amount,currentDate,category);
 
+        Expense expense = new Expense(
+            id,
+            name,
+            description,
+            amount,
+            LocalDate.now(),
+            category
+        );
+
+        expenses.add(expense);
         System.out.println("New expense created:");
         System.out.println("ID: " + expense.getId());
         System.out.println("Name: " + expense.getName());
         System.out.println("Description: " + expense.getDescription());
         System.out.println("Amount: " + expense.getAmount());
         System.out.println("Date: " + expense.getDateTime());
-        expenses.add(expense);
-//        for (Expense e : expenses){
-//            System.out.println(e.getAmount() + ", " + e.getCategory());
-//        }
-        System.out.printf("-------------------------- Expense Added Successfully (ID %d) -------------------------- \n", expense.getId());
-        saveExpensesToFile();
+        System.out.printf(
+            "-------------------------- Expense Added Successfully (ID %d) -------------------------- \n",
+            expense.getId()
+        );
+        saveExpenses();
     }
 
-    private static int findExpenseId(int expenseId) {
-        for (Expense expense : expenses) {
-            if (expense.getId() == expenseId) {
-                return expenses.indexOf(expense);
+    public void clearAll() {
+        expenses = new ArrayList<>();
+        saveExpenses();
+    }
+
+    public void updateExpense(
+        String name,
+        String description,
+        double amount,
+        String category,
+        int pos
+    ) {
+        // Update expenses based on the position which you can check by listing all the expenses.
+        if (pos > 0 && pos <= expenses.size()) {
+            // Adjust for 0-based index
+            Expense expense = expenses.get(pos - 1);
+
+            // Update the fields only if they're not empty.
+            if (!name.isBlank()) {
+                expense.setName(name);
             }
-        }
-        return -1;
-    }
 
-    public static void updateExpense(String name, String description, double amount, String category, int expenseId) {
-        int index = findExpenseId(expenseId);
-        if (index != -1) {
-            Expense expense = expenses.get(index);
-            expense.setName(name);
-            expense.setDescription(description);
-            expense.setCategory(category);
-            expense.setAmount(amount);
-            System.out.printf("Task with (expenseId %d) successfully updated !", expenseId);
-            saveExpensesToFile();
-        } else {
-            System.out.printf("Task with (expenseId %d) doesn't exist!", expenseId);
-        }
-    }
-
-    public static void listAllExpenses() {
-        loadExpensesFromFile();
-        for (Expense expense : expenses) {
-            if (expenses.isEmpty()){
-                System.out.println("Can't list because the list is empty!");
+            if (!description.isBlank()) {
+                expense.setDescription(description);
             }
-            System.out.format("%-5s %-12s %-20s %-30s %-10s%n", "ID", "DATE", "NAME", "DESCRIPTION", "AMOUNT");
-            System.out.println("-----------------------------------------------------------------------------------------");
-            System.out.format("%-5d %-12s %-20s %-30s $%-10.2f%n",
-                    expense.getId(),
-                    expense.getDateTime(),
-                    expense.getName(),
-                    expense.getDescription(),
-                    expense.getAmount()
+
+            if (!category.isBlank()) {
+                expense.setCategory(category);
+            }
+
+            if (amount > 0) {
+                expense.setAmount(amount);
+            }
+
+            System.out.printf(
+                "Task with (expenseId %d) successfully updated !",
+                pos
             );
-
-//            System.out.println("ID    DATE    DESCRIPTION  AMOUNT");
-//            System.out.println("Expense : " + expense.getId() + expense.getDateTime() + expense.getDescription() + expense.getAmount());
+            saveExpenses();
+        } else {
+            System.out.printf("Task with (expenseId %d) doesn't exist!", pos);
         }
     }
 
-    public static void summarizeExpenses() {
-        loadExpensesFromFile();// get total
-        double totalExpenses = expenses.stream()
-                .mapToDouble(Expense::getAmount).sum();
-//                .reduce(0.0, (a, b) -> a + b); //can use method reference Double :: sum instead
+    public void listAllExpenses() {
+        System.out.format(
+            "%-5s %-12s %-20s %-30s %-10s\n",
+            "ID",
+            "DATE",
+            "NAME",
+            "DESCRIPTION",
+            "AMOUNT"
+        );
+        System.out.println(
+            "-----------------------------------------------------------------------------------------"
+        );
+
+        int counter = 0;
+        for (Expense expense : expenses) {
+            System.out.format(
+                "%-5d %-12s %-20s %-30s $%-10.2f\n",
+                ++counter,
+                expense.getDateTime(),
+                expense.getName(),
+                expense.getDescription(),
+                expense.getAmount()
+            );
+        }
+    }
+
+    public void summarizeExpenses() {
+        double totalExpenses = expenses
+            .stream()
+            .mapToDouble(Expense::getAmount)
+            .sum();
         System.out.println("Summary : " + totalExpenses);
     }
 
-    public static void deleteExpense(int expenseId) {
-        loadExpensesFromFile();
-        boolean removeExpense = expenses.removeIf(expense -> (expenseId == expense.getId()));
-        if (removeExpense) {
-            System.out.println("Expense with ID : " + expenseId + "  Successfully deleted !");
-        } else {
-            System.out.println("Failed to delete expense with ID : " + expenseId +" , because it doesn't exist!");
+    public void deleteExpense(int pos) {
+        if (pos < 1 && pos > expenses.size()) {
+            System.out.println(
+                "Failed to delete expense with ID : " +
+                pos +
+                " , because it doesn't exist!"
+            );
+            return;
         }
-        saveExpensesToFile();
-//        Stream<Expense> expenseIdToDelete = expenses.stream().filter(e -> (e.getId() == expenseId));
-//        expenses.remove(expenseIdToDelete);
+
+        expenses.remove(pos - 1);
+        System.out.println(
+            "Expense with ID : " + pos + "  Successfully deleted !"
+        );
+
+        saveExpenses();
     }
 
-    public static void summarizeByMonth(Month month) {
-        loadExpensesFromFile();
-        double totalAmountForMonth = expenses.stream()
-                .filter(e -> (e.getDateTime().getMonth() == month))
-                .map(Expense::getAmount)
-                .reduce(0.0, (a, b) -> a + b);
+    public void summarizeByMonth(Month month) {
+        double totalAmountForMonth = expenses
+            .stream()
+            .filter(e -> (e.getDateTime().getMonth() == month))
+            .map(Expense::getAmount)
+            .reduce(0.0, (a, b) -> a + b);
 
         System.out.println("Month Expense : " + totalAmountForMonth);
     }
-
-    public static void clearAll() {
-        loadExpensesFromFile();
-        try {
-            FileWriter writer = new FileWriter(FILE_PATH);
-            writer.write("[]");
-            writer.close();
-
-            expenses.clear();
-            saveExpensesToFile();
-            System.out.println("All expenses cleared successfully");
-        } catch (IOException e) {
-            System.out.println("Unable to clear file data !");
-        }
-    }
-
 }
