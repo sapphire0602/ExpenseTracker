@@ -120,8 +120,7 @@ public class ExpenseManager {
         }
     }
 
-    public static void listAllExpenses() {
-        loadExpensesFromFile();
+    public void listAllExpenses() {
         System.out.format(
             "%-5s %-12s %-20s %-30s %-10s\n",
             "ID",
