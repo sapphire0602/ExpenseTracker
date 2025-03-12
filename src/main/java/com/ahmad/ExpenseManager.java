@@ -18,10 +18,9 @@ import java.util.List;
 public class ExpenseManager {
 
     // Set the default file name to ".expense_tracker.json" will be hidden by default in most file manager.
-    private static final String FILE_NAME = ".expense_tracker.json";
-    private int lastId = 0;
-    private final LocalDate date = LocalDate.now();
     private List<Expense> expenses = new ArrayList<>();
+
+    private static final String FILE_NAME = ".expense_tracker.json";
     private static final Gson gson = new GsonBuilder()
         .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
         .setPrettyPrinting()
@@ -178,20 +177,5 @@ public class ExpenseManager {
             .reduce(0.0, (a, b) -> a + b);
 
         System.out.println("Month Expense : " + totalAmountForMonth);
-    }
-
-    public static void clearAll() {
-        loadExpensesFromFile();
-        try {
-            FileWriter writer = new FileWriter(FILE_PATH);
-            writer.write("[]");
-            writer.close();
-
-            expenses.clear();
-            saveExpensesToFile();
-            System.out.println("All expenses cleared successfully");
-        } catch (IOException e) {
-            System.out.println("Unable to clear file data !");
-        }
     }
 }
