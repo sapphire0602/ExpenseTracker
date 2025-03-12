@@ -1,14 +1,10 @@
 package com.ahmad;
 
-import apple.laf.JRSUIConstants.Size;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
