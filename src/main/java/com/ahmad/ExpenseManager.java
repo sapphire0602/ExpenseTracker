@@ -170,8 +170,7 @@ public class ExpenseManager {
         saveExpenses();
     }
 
-    public static void summarizeByMonth(Month month) {
-        loadExpensesFromFile();
+    public void summarizeByMonth(Month month) {
         double totalAmountForMonth = expenses
             .stream()
             .filter(e -> (e.getDateTime().getMonth() == month))
