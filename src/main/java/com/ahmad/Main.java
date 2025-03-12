@@ -29,7 +29,10 @@ public class Main {
         }
     }
 
-    public static void handleExpenseMethods(String input) {
+    public static void handleExpenseMethods(
+        ExpenseManager manager,
+        String input
+    ) {
         String[] args = input.trim().split(" (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
         if (args.length == 0) {
             System.out.println("Please, Enter an argument !");
@@ -42,7 +45,7 @@ public class Main {
         }
         switch (command) {
             case "add":
-                addExpense(args);
+                addExpense(manager, args);
                 break;
             case "list":
                 list();
@@ -63,7 +66,6 @@ public class Main {
                 clear();
                 break;
             case "exit":
-                ExpenseManager.saveExpensesToFile();
                 System.out.println(
                     "----------------EXITING THE APPLICATION---------------"
                 );
@@ -72,15 +74,14 @@ public class Main {
             default:
                 System.err.println("Invalid Input, Please Try Again!");
         }
-
-        ExpenseManager.saveExpensesToFile();
     }
 
-    public static void addExpense(String[] args) {
-        String name = null;
-        String description = null;
-        double amount = -1;
-        String category = null;
+    public void addExpense(ExpenseManager manager, String[] args) {
+        String name = "";
+        String description = "";
+        double amount = 0;
+        String category = "";
+
         for (int i = 1; i < args.length; i += 2) {
             switch (args[i]) {
                 case "--name":
@@ -97,17 +98,15 @@ public class Main {
                     break;
             }
         }
-        ExpenseManager.addExpense(name, description, category, amount);
-        if (
-            name == null ||
-            description == null ||
-            category == null ||
-            amount == -1
-        ) {
+
+        if (name == "" || description == "" || category == "" || amount == 0) {
             System.err.println(
                 "Error: Missing required fields. Usage: add --name <name> --description <desc> --category <cat> --amount <amount>"
             );
+            return;
         }
+
+        manager.addExpense(name, description, category, amount);
     }
 
     public static void list() {
