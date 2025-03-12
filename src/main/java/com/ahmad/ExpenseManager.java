@@ -50,14 +50,14 @@ public class ExpenseManager {
     ) {
         // Set the initial ID to 1
         int id = 1;
-        
+
         // Check if the list is not empty and retrieve the last ID of the expense
         // then set the initial ID to the last ID + 1
         if (!expenses.isEmpty()) {
             final int lastID = expenses.getLast().getId();
             id = lastID + 1;
         }
-        
+
         Expense expense = new Expense(
             id,
             name,
@@ -90,30 +90,42 @@ public class ExpenseManager {
         return -1;
     }
 
-    public static void updateExpense(
+    public void updateExpense(
         String name,
         String description,
         double amount,
         String category,
-        int expenseId
+        int pos
     ) {
-        int index = findExpenseId(expenseId);
-        if (index != -1) {
-            Expense expense = expenses.get(index);
-            expense.setName(name);
-            expense.setDescription(description);
-            expense.setCategory(category);
-            expense.setAmount(amount);
+        // Update expenses based on the position which you can check by listing all the expenses.
+        if (pos > 0 && pos <= expenses.size()) {
+            // Adjust for 0-based index
+            Expense expense = expenses.get(pos - 1);
+
+            // Update the fields only if they're not empty.
+            if (!name.isBlank()) {
+                expense.setName(name);
+            }
+
+            if (!description.isBlank()) {
+                expense.setDescription(description);
+            }
+
+            if (!category.isBlank()) {
+                expense.setCategory(category);
+            }
+
+            if (amount > 0) {
+                expense.setAmount(amount);
+            }
+
             System.out.printf(
                 "Task with (expenseId %d) successfully updated !",
-                expenseId
+                pos
             );
-            saveExpensesToFile();
+            saveExpenses();
         } else {
-            System.out.printf(
-                "Task with (expenseId %d) doesn't exist!",
-                expenseId
-            );
+            System.out.printf("Task with (expenseId %d) doesn't exist!", pos);
         }
     }
 
