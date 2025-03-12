@@ -24,7 +24,7 @@ public class Main {
                 System.out.flush();
                 String input = scanner.nextLine().trim();
 
-                handleExpenseMethods(input);
+                handleExpenseMethods(expenseManager, input);
             }
         }
     }
@@ -48,22 +48,22 @@ public class Main {
                 addExpense(manager, args);
                 break;
             case "list":
-                list();
+                list(manager);
                 break;
             case "summary":
-                summary(args);
+                summary(manager, args);
                 break;
             case "delete":
-                delete(args);
+                delete(manager, args);
                 break;
             case "update":
-                update(args);
+                update(manager, args);
                 break;
             case "help":
                 getHelp();
                 break;
             case "clear":
-                clear();
+                clear(manager);
                 break;
             case "exit":
                 System.out.println(
@@ -76,7 +76,7 @@ public class Main {
         }
     }
 
-    public void addExpense(ExpenseManager manager, String[] args) {
+    public static void addExpense(ExpenseManager manager, String[] args) {
         String name = "";
         String description = "";
         double amount = 0;
@@ -109,18 +109,18 @@ public class Main {
         manager.addExpense(name, description, category, amount);
     }
 
-    public static void list() {
-        ExpenseManager.listAllExpenses();
+    public static void list(ExpenseManager manager) {
+        manager.listAllExpenses();
     }
 
-    public static void summary(String[] args) {
+    public static void summary(ExpenseManager manager, String[] args) {
         if (args.length == 1) {
-            ExpenseManager.summarizeExpenses();
+            manager.summarizeExpenses();
         } else {
             if (args[1].equals("--month")) {
                 try {
                     Month month = Month.valueOf(args[2].toUpperCase());
-                    ExpenseManager.summarizeByMonth(month);
+                    manager.summarizeByMonth(month);
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 }
@@ -128,18 +128,19 @@ public class Main {
         }
     }
 
-    public static void delete(String[] args) {
+    public static void delete(ExpenseManager manager, String[] args) {
         if (args.length == 3 && args[1].equals("--id")) {
-            ExpenseManager.deleteExpense(Integer.parseInt(args[2]));
+            manager.deleteExpense(Integer.parseInt(args[2]));
         }
     }
 
-    public static void update(String[] args) {
-        String name = null;
-        String description = null;
-        double amount = -1;
-        String category = null;
-        int expenseId = -1;
+    public static void update(ExpenseManager manager, String[] args) {
+        String name = "";
+        String description = "";
+        double amount = 0;
+        String category = "";
+        int expenseId = 0;
+
         for (int i = 1; i < args.length; i += 2) {
             switch (args[i]) {
                 case "--id":
@@ -158,20 +159,16 @@ public class Main {
                     amount = Double.parseDouble(args[i + 1]);
             }
         }
+
         if (expenseId <= 0) {
             System.err.println("Invalid Expense Id");
         }
-        ExpenseManager.updateExpense(
-            name,
-            description,
-            amount,
-            category,
-            expenseId
-        );
+
+        manager.updateExpense(name, description, amount, category, expenseId);
     }
 
-    public static void clear() {
-        ExpenseManager.clearAll();
+    public static void clear(ExpenseManager manager) {
+        manager.clearAll();
     }
 
     private static void getHelp() {
